@@ -11,13 +11,8 @@ void setup() {
 }
 
 void loop() {
-  if(Serial.read() != -1){
-    Serial.println(getScaledValue());
-    digitalWrite(LED_PIN, HIGH);
-    delay(100);
-    digitalWrite(LED_PIN, LOW);
-  }
-  delay(1);
+  Serial.println(((float)getScaledValue() - 59600)/217);
+  delay(1000);
 }
 
 uint32_t getScaledValue(){
