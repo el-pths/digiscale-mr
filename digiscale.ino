@@ -1,10 +1,10 @@
-template<size_t Size> double getArithmeticMean(uint32_t (&values)[Size]);
 
 const int LED_PIN = 16;
 const int SCK_PIN = 15;
 const int DT_PIN = 14;
 const int TARE_PIN = 5;
-double adjustment = 0;
+const double CONVERSION_FACTOR = 217;
+uint32_t adjustment = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -20,39 +20,18 @@ void loop() {
     setAdjustment();
     digitalWrite(LED_PIN, LOW);
   }
-  uint32_t arr[10];
-  for(int i = 0; i<10; i++){
-    arr[i] = getScaledValue();
-    delay(10);
-  }
-  Serial.println((getArithmeticMean(arr) - adjustment)/217);
+  Serial.println((long)(getScaledValue() - adjustment)/CONVERSION_FACTOR);
   delay(1000);
 }
 
 void setAdjustment(){
-  uint32_t arr[10];
-  for(int i = 0; i<10; i++){
-    arr[i] = getScaledValue();
+  int n = 10;
+  uint32_t s = 0;
+  for(int i = 0; i<n; i++){
+    s += getScaledValue();
     delay(10);
   }
-  adjustment = getArithmeticMean(arr);
-}
-
-template<size_t Size> double getArithmeticMean(uint32_t (&values)[Size]){
-  double s = 0;
-  for(int i = 0; i<Size; i++){
-    s += values[i];
-  }
-  return s/Size;
-}
-
-template<size_t Size> double getStandardDeviation(uint32_t (&values)[Size]){
-  double s = 0;
-  double mean = getArithmeticMean(values);
-  for(int i = 0; i<Size; i++){
-    s += sq(values[i] - mean);
-  }
-  return sqrt(s/Size);
+  adjustment = s/n;
 }
 
 uint32_t getScaledValue(){
